@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ushisbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink:    #0a0a0f;
+      --paper:  #f4f1eb;
+      --accent: #e84c2b;
+      --muted:  #9e9b93;
+      --border: #d6d2c8;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'IBM Plex Mono', monospace;
+      overflow: hidden;
+    }
+
+    /* ── TOP BAR ── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 52px;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.08); }
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--paper);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #3ddc84;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    /* ── LOADING SCREEN ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 200;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 42px;
+      color: var(--paper);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .loader-logo span { color: var(--accent); }
+
+    .loader-bar-track {
+      width: 200px;
+      height: 2px;
+      background: #2a2a35;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loader-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      animation: load 1.8s cubic-bezier(.4,0,.2,1) forwards;
+    }
+
+    @keyframes load {
+      from { width: 0%; }
+      to   { width: 100%; }
+    }
+
+    .loader-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    /* ── IFRAME ── */
+    #app-frame {
+      position: fixed;
+      top: 52px; left: 0; right: 0; bottom: 0;
+      width: 100%;
+      height: calc(100vh - 52px);
+      border: none;
+      background: #fff;
+    }
+
+    /* ── CORNER TAG ── */
+    .corner-tag {
+      position: fixed;
+      bottom: 16px;
+      right: 18px;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      z-index: 99;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading screen -->
+  <div id="loader">
+    <div class="loader-logo">Ushis<span>bot</span></div>
+    <div class="loader-bar-track">
+      <div class="loader-bar-fill"></div>
+    </div>
+    <div class="loader-label">Yuklanmoqda…</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <a class="logo" href="#">
+      <div class="logo-mark"></div>
+      <span class="logo-text">Ushis<span>bot</span></span>
+    </a>
+    <div class="status-pill">
+      <div class="dot"></div>
+      JONLI
+    </div>
+  </header>
+
+  <!-- Main iframe -->
+  <iframe
+    id="app-frame"
+    src="https://script.google.com/macros/s/AKfycbx6ETcQYN4VVoev/exec"
+    title="Ushisbot ilovasi"
+    allowfullscreen
+    onload="frameLoaded()"
+  ></iframe>
+
+  <div class="corner-tag">ushisbot.uz</div>
+
+  <script>
+    // Hide loader after iframe loads (or max 3s)
+    function frameLoaded() {
+      document.getElementById('loader').classList.add('hidden');
+    }
+    setTimeout(frameLoaded, 3000);
+  </script>
+
+</body>
+</html>

@@ -416,7 +416,7 @@ html,body{height:100%;background:var(--ink);color:var(--text-primary);font-famil
     <div class="login-info">
       Tizimga kirish uchun korporativ<br/>
       <a href="#">@uniconsoft.uz</a> yoki ruxsat berilgan Gmail akkaunt kerak.<br/><br/>
-      <span style="opacity:.6">Muammo bo'lsa: admin@uniconsoft.uz</span>
+      <span style="opacity:.6">Muammo bo'lsa: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a2b2e2723240a3f242329252439252c3e643f30">[email&#160;protected]</a></span>
     </div>
   </div>
 </div>
@@ -696,7 +696,7 @@ html,body{height:100%;background:var(--ink);color:var(--text-primary);font-famil
   <div class="mb" id="mo-cnt"></div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════════
 // GOOGLE SHEETS CONFIG
 // ══════════════════════════════════════════════════
@@ -1305,8 +1305,8 @@ function renderAll(){
 const GOOGLE_CLIENT_ID = '575772268391-bp3nlcidc5ajg8su95oi1ub79f1un2tb.apps.googleusercontent.com';
 
 // Ruxsat berilgan domenlar / emaillar (bo'sh qoldirsa — hammaga)
-const ALLOWED_DOMAINS = ['gmail.com', 'mail.ru']; // misol: ['uniconsoft.uz','gmail.com']
-const ALLOWED_EMAILS  = ['davlatmurodqosimov@gmail.com', 'axmedov.bexruzjon@gmail.com']; // misol: ['admin@uniconsoft.uz']
+const ALLOWED_DOMAINS = []; // misol: ['uniconsoft.uz','gmail.com']
+const ALLOWED_EMAILS  = ['axmedov.bexruzjon@gmail.com']; // misol: ['admin@uniconsoft.uz']
 
 let currentUser = null;
 let isDemoMode  = false;
@@ -1385,7 +1385,7 @@ function handleCredential(response){
     currentUser = { name: payload.name, email, picture: payload.picture, sub: payload.sub };
     enterApp();
   } catch(e) {
-    loginError('Token o'qishda xatolik');
+    loginError('Token xatolik: ' + e.message);
   }
 }
 
@@ -1400,37 +1400,52 @@ function loginDemo(){
 }
 
 function enterApp(){
-  // Update UI with user info
   const u = currentUser;
-  const el = id => document.getElementById(id);
 
-  // User chip
-  const avSm = el('user-av-sm');
-  if(u.picture && avSm){
-    avSm.outerHTML = `<img class="user-avatar" id="user-av-sm" src="${u.picture}" alt="${u.name}" referrerpolicy="no-referrer"/>`;
-  } else if(avSm) {
-    avSm.textContent = (u.name||'?')[0].toUpperCase();
-  }
-  if(el('user-name-sm')) el('user-name-sm').textContent = u.name.split(' ')[0];
-
-  // Rail avatar
-  const railAv = el('rail-av-img');
-  if(railAv) railAv.textContent = (u.name||'?')[0].toUpperCase();
-
-  // Dropdown
-  if(el('um-name'))  el('um-name').textContent  = u.name;
-  if(el('um-email')) el('um-email').textContent = u.email;
-
-  // Sidebar footer will be updated by buildSB
-  // Hide login screen
-  const ls = el('login-screen');
+  // 1. Immediately hide login screen (remove from pointer events)
+  const ls = document.getElementById('login-screen');
   if(ls){
-    ls.classList.add('hiding');
-    setTimeout(()=>{ ls.style.display='none'; }, 400);
+    ls.style.pointerEvents = 'none';
+    ls.style.opacity = '0';
+    ls.style.transition = 'opacity 0.35s';
+    setTimeout(function(){ ls.style.display = 'none'; }, 370);
   }
 
-  if(isDemoMode) showToast('🚀 Demo rejimda kirildingiz', 'warn');
-  else           showToast(`✓ Xush kelibsiz, ${u.name.split(' ')[0]}!`, 'ok');
+  // 2. Update user chip
+  const avSm = document.getElementById('user-av-sm');
+  if(avSm){
+    if(u.picture){
+      const img = document.createElement('img');
+      img.className = 'user-avatar';
+      img.id = 'user-av-sm';
+      img.src = u.picture;
+      img.alt = u.name;
+      img.setAttribute('referrerpolicy','no-referrer');
+      avSm.parentNode.replaceChild(img, avSm);
+    } else {
+      avSm.textContent = (u.name || '?')[0].toUpperCase();
+    }
+  }
+  const nameSm = document.getElementById('user-name-sm');
+  if(nameSm) nameSm.textContent = u.name.split(' ')[0];
+
+  // 3. Rail avatar
+  const railAv = document.getElementById('rail-av-img');
+  if(railAv) railAv.textContent = (u.name || '?')[0].toUpperCase();
+
+  // 4. Dropdown
+  const umName = document.getElementById('um-name');
+  const umEmail = document.getElementById('um-email');
+  if(umName) umName.textContent = u.name;
+  if(umEmail) umEmail.textContent = u.email;
+
+  // 5. Init dashboard
+  swMod('hr');
+  renderAll();
+
+  // 6. Toast
+  var msg = isDemoMode ? 'Demo rejimda kirildingiz' : ('Xush kelibsiz, ' + u.name.split(' ')[0] + '!');
+  showToast(msg, isDemoMode ? 'warn' : 'ok');
 }
 
 function doSignOut(){
@@ -1446,12 +1461,11 @@ function doSignOut(){
 }
 
 // ══════════ INIT ══════════
+// Sahifa ochilganda FAQAT login ekranini ko'rsat
+// swMod va renderAll — enterApp() ichida chaqiriladi
 initTheme();
-// Init Google Sign-In after GSI script loads
 if(typeof google !== 'undefined'){ initGoogleSignIn(); }
 else { window.addEventListener('load', initGoogleSignIn); }
-swMod('hr');
-setTimeout(()=>{ renderAll(); }, 60);
 </script>
 </body>
 </html>

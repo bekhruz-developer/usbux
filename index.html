@@ -1604,49 +1604,6 @@ document.addEventListener('click', e => {
   }
 });
 
-// ── LOGIN ──
-function initGoogleSignIn(){
-  if(typeof google === 'undefined' || GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE')) return;
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleCredential,
-    auto_select: false,
-    cancel_on_tap_outside: false,
-  });
-  google.accounts.id.renderButton(
-    document.getElementById('g-signin-wrap'),
-    { theme:'filled_black', size:'large', text:'signin_with', shape:'rectangular', width:320 }
-  );
-  // Try auto login
-  google.accounts.id.prompt();
-}
-
-function handleCredential(response){
-  try {
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    const email   = payload.email || '';
-    const domain  = email.split('@')[1] || '';
-
-    // Domain / email check
-    if(ALLOWED_DOMAINS.length && !ALLOWED_DOMAINS.includes(domain)){
-      loginError(`"${email}" manziliga ruxsat yo'q.\nRuxsat berilgan domenlar: ${ALLOWED_DOMAINS.join(', ')}`);
-      return;
-    }
-    if(ALLOWED_EMAILS.length && !ALLOWED_EMAILS.includes(email)){
-      loginError(`"${email}" manziliga ruxsat yo'q.`);
-      return;
-    }
-
-    currentUser = { name: payload.name, email, picture: payload.picture, sub: payload.sub };
-    enterApp();
-  } catch(e) {
-    loginError('Token xatolik: ' + e.message);
-  }
-}
-
-function loginError(msg){
-  showToast('❌ '+msg, 'err');
-}
 
 
 function enterApp(){

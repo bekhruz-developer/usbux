@@ -43,12 +43,17 @@
 
 html,body{height:100%;background:var(--ink);color:var(--text-primary);font-family:'IBM Plex Sans',sans-serif;overflow:hidden;transition:background .3s,color .3s;}
 
+/* Settings overlay */
+#settings-overlay{ display:none; }
+#settings-overlay.open{ display:flex !important; }
+
 /* ── LOGIN SCREEN ── */
 #login-screen{
   position:fixed;inset:0;z-index:1000;
   background:var(--ink);
   display:flex;align-items:center;justify-content:center;
   transition:opacity .4s ease;
+  pointer-events:all;
 }
 #login-screen.hiding{opacity:0;pointer-events:none;}
 .login-box{
@@ -78,78 +83,7 @@ html,body{height:100%;background:var(--ink);color:var(--text-primary);font-famil
 
 /* Google Sign-In button wrapper */
 #g-signin-wrap{display:flex;justify-content:center;margin-bottom:16px;}
-.login-input{
-  width:100%;
-  background:var(--input-bg,rgba(255,255,255,.05));
-  border:1px solid var(--input-border,rgba(255,255,255,.1));
-  border-radius:8px;padding:10px 13px;
-  color:var(--text-primary,#f4f1eb);
-  font-size:12px;font-family:'IBM Plex Mono',monospace;
-  outline:none;transition:border-color .15s;margin-bottom:8px;
-}
-.login-input:focus{border-color:rgba(232,76,43,.4);}
-.login-input::placeholder{color:var(--muted,#9e9b93);}
-[data-theme="light"] .login-input{
-  background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1);color:#0f172a;
-}
-
-/* Settings modal */
-.settings-overlay{
-  position:fixed;inset:0;background:rgba(0,0,10,.7);backdrop-filter:blur(6px);
-  z-index:500;display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .2s;
-}
-.settings-overlay.open{opacity:1;pointer-events:all;}
-.settings-box{
-  width:480px;max-width:95vw;
-  background:var(--surface2,#1c1c28);
-  border:1px solid var(--border,rgba(255,255,255,.08));
-  border-radius:14px;padding:28px;
-  transform:translateY(12px);transition:transform .2s;
-  max-height:90vh;overflow-y:auto;
-}
-.settings-overlay.open .settings-box{transform:translateY(0);}
-.settings-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;
-  margin-bottom:4px;display:flex;align-items:center;gap:9px;}
-.settings-sub{font-size:10.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;
-  margin-bottom:20px;letter-spacing:.06em;}
-.settings-group{margin-bottom:18px;}
-.settings-label{font-size:9px;letter-spacing:.14em;color:var(--muted);
-  text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;}
-.settings-input{
-  width:100%;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);border-radius:7px;
-  padding:9px 12px;color:var(--paper,#f4f1eb);
-  font-size:12px;font-family:'IBM Plex Mono',monospace;
-  outline:none;transition:border-color .15s;
-}
-.settings-input:focus{border-color:rgba(232,76,43,.35);}
-.settings-input::placeholder{color:var(--muted);}
-[data-theme="light"] .settings-input{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1);color:#0f172a;}
-.settings-hint{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;
-  margin-top:5px;line-height:1.5;}
-.settings-divider{height:1px;background:var(--border);margin:16px 0;}
-.settings-email-list{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
-.settings-email-row{display:flex;align-items:center;gap:7px;}
-.settings-email-row input{flex:1;}
-.del-btn{width:28px;height:28px;border-radius:6px;border:1px solid rgba(232,76,43,.2);
-  background:rgba(232,76,43,.07);color:var(--accent);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
-.del-btn:hover{background:rgba(232,76,43,.18);}
-.add-email-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;
-  border-radius:7px;border:1px dashed rgba(255,255,255,.1);
-  background:transparent;color:rgba(255,255,255,.4);font-size:11px;
-  cursor:pointer;font-family:'IBM Plex Mono',monospace;margin-top:6px;
-  transition:all .13s;width:100%;justify-content:center;}
-.add-email-btn:hover{background:rgba(255,255,255,.04);color:var(--paper);}
-.settings-save-btn{width:100%;padding:11px;border-radius:9px;border:none;
-  background:var(--accent);color:#fff;font-size:13px;font-weight:700;
-  cursor:pointer;font-family:'IBM Plex Sans',sans-serif;margin-top:6px;
-  transition:background .13s;}
-.settings-save-btn:hover{background:#d43d20;}
-.settings-close{float:right;background:none;border:none;color:var(--muted);
-  font-size:16px;cursor:pointer;padding:0;margin-top:-4px;}
-.settings-close:hover{color:var(--paper);}
+/* demo btn removed */
 
 /* user info in topbar */
 .user-chip{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px 4px 4px;border-radius:8px;transition:background .13s;border:1px solid var(--border);}
@@ -464,79 +398,93 @@ html,body{height:100%;background:var(--ink);color:var(--text-primary);font-famil
 <body>
 
 <!-- ══ LOGIN SCREEN ══ -->
-<!-- ══ SETTINGS MODAL ══ -->
-<div class="settings-overlay" id="settings-overlay" onclick="closeSettingsOnBg(event)">
-  <div class="settings-box">
-    <div class="settings-title">
-      ⚙️ Tizim sozlamalari
-      <button class="settings-close" onclick="closeSettings()">✕</button>
-    </div>
-    <div class="settings-sub">ADMIN PANEL · KIRISH NAZORATI</div>
-
-    <div class="settings-group">
-      <div class="settings-label">Google Client ID</div>
-      <input class="settings-input" id="cfg-client-id" type="text"
-        placeholder="xxxxxxxx.apps.googleusercontent.com"/>
-      <div class="settings-hint">Google Cloud Console → Credentials → OAuth 2.0 Client ID</div>
-    </div>
-
-    <div class="settings-divider"></div>
-
-    <div class="settings-group">
-      <div class="settings-label">Ruxsat etilgan emaillar</div>
-      <div class="settings-hint" style="margin-bottom:8px;">
-        Faqat shu emaillar tizimga kira oladi. Bo'sh qolsa — hamma Google akkaunt kiradi.
-      </div>
-      <div class="settings-email-list" id="email-list"></div>
-      <button class="add-email-btn" onclick="addEmailRow()">＋ Email qo'shish</button>
-    </div>
-
-    <div class="settings-divider"></div>
-
-    <div class="settings-group">
-      <div class="settings-label">Google Sheets (HR)</div>
-      <input class="settings-input" id="cfg-sheet-id" type="text"
-        placeholder="Sheet ID" style="margin-bottom:7px;"/>
-      <input class="settings-input" id="cfg-sheet-name" type="text"
-        placeholder="Varaq nomi  (masalan: HR)"/>
-      <div class="settings-hint">Sheets → Share → Anyone with the link → Viewer</div>
-    </div>
-
-    <button class="settings-save-btn" onclick="saveSettings()">💾 Saqlash va qo'llash</button>
-  </div>
-</div>
-
-<!-- ══ LOGIN SCREEN ══ -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo"></div>
     <div class="login-title">Unicon Soft</div>
     <div class="login-sub">BUXORO FILIALI · BOSHQARUV TIZIMI</div>
 
-    <div id="login-status" style="min-height:20px;margin-bottom:8px;font-size:11px;
+    <div id="login-status" style="min-height:20px;margin-bottom:10px;font-size:11px;
       font-family:'IBM Plex Mono',monospace;color:var(--muted);text-align:center;"></div>
 
-    <div id="g-signin-wrap" style="min-height:48px;display:flex;align-items:center;justify-content:center;">
-      <!-- Google Sign-In button renders here -->
-    </div>
+    <div id="g-signin-wrap" style="min-height:52px;display:flex;align-items:center;justify-content:center;"></div>
 
-    <div id="login-no-config" style="display:none;margin-top:14px;padding:12px 14px;
+    <div id="login-no-config" style="display:none;margin-top:12px;padding:11px 14px;
       border-radius:9px;background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.2);
       font-size:11px;color:var(--accent2);font-family:'IBM Plex Mono',monospace;line-height:1.7;">
-      ⚠ Google Client ID sozlanmagan.<br/>
-      Quyidagi tugma orqali sozlamalarni kiriting.
     </div>
 
-    <div style="margin-top:16px;text-align:center;">
-      <button onclick="openSettings()"
-        style="background:none;border:1px solid rgba(255,255,255,.1);border-radius:7px;
-        color:var(--muted);font-size:11px;padding:7px 16px;
-        font-family:'IBM Plex Mono',monospace;cursor:pointer;transition:all .13s;">
+    <div style="margin-top:16px;text-align:center;position:relative;z-index:1001;">
+      <button id="open-settings-btn"
+        style="background:none;border:1px solid rgba(255,255,255,.12);border-radius:7px;
+        color:var(--muted);font-size:11px;padding:7px 18px;
+        font-family:'IBM Plex Mono',monospace;cursor:pointer;transition:all .13s;
+        position:relative;z-index:1001;">
         ⚙️ Sozlamalar
       </button>
     </div>
   </div>
-</div></div>
+</div>
+
+<!-- ══ SETTINGS MODAL ══ -->
+<div id="settings-overlay" onclick="settingsBgClick(event)"
+  style="position:fixed;inset:0;background:rgba(0,0,10,.75);backdrop-filter:blur(6px);
+  z-index:1100;display:none;align-items:center;justify-content:center;">
+  <div style="width:460px;max-width:95vw;background:var(--surface2);
+    border:1px solid var(--border);border-radius:14px;padding:28px;
+    max-height:90vh;overflow-y:auto;animation:fadeUp .18s ease;">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;">⚙️ Tizim sozlamalari</div>
+      <button onclick="closeSettings()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <div style="font-size:9.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;
+      letter-spacing:.08em;margin-bottom:20px;">MARKAZIY CONFIG SHEET ORQALI BOSHQARILADI</div>
+
+    <div style="font-size:9px;letter-spacing:.14em;color:var(--muted);
+      text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">
+      Config Sheet ID <span style="color:var(--accent)">*</span>
+    </div>
+    <input id="inp-cfg-id" type="text"
+      placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms  yoki to'liq URL"
+      style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+      border-radius:8px;padding:9px 12px;color:var(--paper);font-size:11.5px;
+      font-family:'IBM Plex Mono',monospace;outline:none;margin-bottom:5px;box-sizing:border-box;"/>
+    <div style="font-size:9.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;
+      line-height:1.6;margin-bottom:16px;">
+      Bu ID HTML faylga bir marta yoziladi yoki brauzerga vaqtincha saqlanadi.<br/>
+      Barcha sozlamalar (Client ID, ruxsat etilgan emaillar, HR Sheet) shu varaqdan o'qiladi.
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:0 0 16px;"></div>
+
+    <div id="cfg-preview" style="display:none;margin-bottom:16px;">
+      <div style="font-size:9px;letter-spacing:.14em;color:var(--muted);
+        text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">
+        Joriy Config (Config varaqdan)
+      </div>
+      <div id="cfg-preview-table" style="font-size:11px;font-family:'IBM Plex Mono',monospace;
+        background:rgba(255,255,255,.03);border-radius:8px;padding:10px 12px;line-height:2;"></div>
+      <a id="cfg-sheet-link" href="#" target="_blank"
+        style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10.5px;
+        color:var(--green);font-family:'IBM Plex Mono',monospace;text-decoration:none;">
+        📋 Config varaqni Google Sheets'da ochish →
+      </a>
+    </div>
+
+    <button onclick="applyCfgId()"
+      style="width:100%;padding:11px;border-radius:9px;border:none;background:var(--accent);
+      color:#fff;font-size:13px;font-weight:700;cursor:pointer;
+      font-family:'IBM Plex Sans',sans-serif;margin-bottom:8px;">
+      🔄 Saqlash va yuklash
+    </button>
+    <div style="font-size:10px;color:var(--muted);text-align:center;
+      font-family:'IBM Plex Mono',monospace;line-height:1.6;">
+      Sozlamalarni o'zgartirish uchun Config varaqni tahrirlang.<br/>
+      Keyin bu tugmani bosing — yangi ma'lumotlar yuklanadi.
+    </div>
+  </div>
+</div>
 
 <!-- ══ USER DROPDOWN ══ -->
 <div class="user-menu" id="user-menu">
@@ -815,33 +763,31 @@ html,body{height:100%;background:var(--ink);color:var(--text-primary);font-famil
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════════
-// GOOGLE SHEETS CONFIG — faqat shu 2 qatorni to'ldiring
+// GOOGLE SHEETS CONFIG
 // ══════════════════════════════════════════════════
-const SHEET_ID   = '1QqeH5W6nfj18JAKRfsxnX0x6805qCbobnrjCBKnV1IU';   // misol: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms'
-const SHEET_NAME = 'Xodimlar royxati - 2026';   // misol: 'HR' yoki 'Sheet1'
+// SHEET config — CFG dan yuklanadi (Config Sheet orqali)
+const SHEET_ID   = '';   // bo'sh — CFG.sheetId dan olinadi
+const SHEET_NAME = '';   // bo'sh — CFG.sheetName dan olinadi
 
-// Quyidagilarni o'zgartirish shart emas — avtomatik hisoblanadi
-function getSheetUrl(){
-  var sid = (CFG && CFG.sheetId) || SHEET_ID;
-  return sid ? 'https://docs.google.com/spreadsheets/d/'+sid+'/edit' : '';
-}
-const SHEET_URL = '';  // computed at runtime via getSheetUrl()
 function buildCsvUrl(name){
   var sid  = (CFG && CFG.sheetId)   || SHEET_ID;
   var snam = name || (CFG && CFG.sheetName) || SHEET_NAME;
   if(!sid || !snam) return '';
   return 'https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(snam);
 }
+function getSheetUrl(){
+  var sid = (CFG && CFG.sheetId) || SHEET_ID;
+  return sid ? 'https://docs.google.com/spreadsheets/d/'+sid+'/edit' : '';
+}
 
-// ── COLUMNS — standart tartib (header avtomatik aniqlanadi) ──
-// Sheet ustunlari boshqacha bo'lsa detectColumns() avtomatik moslashtiradi
+// ── COLUMNS mapping (0-indexed, Excel ustunlar tartibiga mos) ──
 const COL = {
   no:0, fsh:1, hudud:2, ishJoyi:3, lavozim:4, bolinma:5,
   tugSana:6, pinfl:7, seriya:8,
   malumot:9, otmYil:10, kurs:11, otmNomi:12,
   ikMut:13, ikYil:14, ikKurs:15,
   amaliyot:16,
-  holat:17,
+  holat:17,          // Asosiy shtat / mehnat shartnoma
   fshKirgan:18, ashOtgan:19,
   tatilGrafik:20, taxminiy:21, tatilda:22, tatilBosh:23, tatilTugsh:24,
   iiIshJoyi:25, iiNomi:26, iiLavozim:27,
@@ -870,160 +816,40 @@ const AC=[['#e84c2b','#c0392b'],['#4fa3e0','#2980b9'],['#3ddc84','#27ae60'],['#f
 function acFor(name){let h=0;for(let c of name)h=(h*31+c.charCodeAt(0))%AC.length;return AC[h];}
 function initials(name){const p=name.trim().split(' ');return(p[0]?.[0]||'')+(p[1]?.[0]||'');}
 
-// Runtime overrides (set from login screen inputs)
-var SHEET_ID_RUNTIME   = '';
-var SHEET_NAME_RUNTIME = '';
-
 let ROWS = [...DEMO];
 let FILTERED = [...ROWS];
 let curMod = 'hr', curPg = 'hr-home';
 
-// COL always points to active mapping (updated after sync)
-// Render functions use COL directly — after sync activeCOL updates COL values in-place
-function updateCOL(newMap){
-  Object.keys(newMap).forEach(k => { COL[k] = newMap[k]; });
-}
-
 // ══════════ GOOGLE SHEETS SYNC ══════════
-// CSV parser — vergul va qo'shtirnoqli qiymatlarni to'g'ri ajratadi
-function parseCSV(text){
-  const rows = [];
-  const lines = text.split(/\r?\n/);
-  for(const line of lines){
-    if(!line.trim()) continue;
-    const cells = [];
-    let cur = '', inQ = false;
-    for(let i = 0; i < line.length; i++){
-      const ch = line[i];
-      if(ch === '"'){
-        if(inQ && line[i+1] === '"'){ cur += '"'; i++; }
-        else inQ = !inQ;
-      } else if(ch === ',' && !inQ){
-        cells.push(cur.trim()); cur = '';
-      } else {
-        cur += ch;
-      }
-    }
-    cells.push(cur.trim());
-    rows.push(cells);
-  }
-  return rows;
-}
-
-// Birinchi qator — ustun nomlari (header). Ularni COL mapping bilan moslashtiradi
-const COL_NAMES = {
-  fsh:          ["F.I.SH.", "Ф.И.Ш.", "FISh", "F.I.Sh."],
-  hudud:        ["Hudud", "Hududlar"],
-  ishJoyi:      ["Ish joyi"],
-  lavozim:      ["Lavozim", "Lavozimi"],
-  bolinma:      ["Bo'linma", "Bolinma", "Bulim"],
-  tugSana:      ["Tug'ilgan sana", "Tugʻilgan sana", "Tugʻilgan sana/oy/yil"],
-  pinfl:        ["PINFL"],
-  seriya:       ["Seriya va raqami", "Seriya"],
-  malumot:      ["Ma'lumoti", "Malumoti"],
-  otmYil:       ["OTMga kirgan yili", "OTM kirgan yil"],
-  kurs:         ["Kursi", "Kurs"],
-  otmNomi:      ["OTM nomi"],
-  ikMut:        ["II-mutaxassislik oqiydimiI", "II-mutaxassislik"],
-  ikYil:        ["IIga kirgan yili", "II-mutaxassislikga kirgan yili"],
-  ikKurs:       ["II- mut. Kursi"],
-  amaliyot:     ["Amaliyotdagilar"],
-  holat:        ["Asosiy shtatga", "Holat", "Ish holati"],
-  fshKirgan:    ["F/SH'ga kirgan sana", "F/SHga kirgan sanasi"],
-  ashOtgan:     ["A/SH'ga o'tgan sana", "ASHga otgan sanasi"],
-  tatilGrafik:  ["Ta'til grafigi"],
-  taxminiy:     ["Taxminiy sanasi", "Taxminiy sana"],
-  tatilda:      ["Ta'tildagi", "Tatilda"],
-  tatilBosh:    ["Ta'til boshlanishi"],
-  tatilTugsh:   ["Ta'til tugashi"],
-  iiIshJoyi:    ["II-ish joyi"],
-  iiNomi:       ["II-ish joyi nomi"],
-  iiLavozim:    ["II-ish joyida lavozimi"],
-  intizom:      ["Intizomiy chora ko'rilganmi"],
-  bajaraOlmagan:["Bajara olmagan ishlari soni"],
-  masuliyat:    ["Mas'uliyati", "Ditsiplina"],
-  reputatsiya:  ["Reputatsiya", "Reputatsiya (stars)"],
-  kechikadi:    ["Muqarrar kechikadi"]
-};
-
-// Header qatoridan avtomatik COL indekslarini aniqlaydi
-function detectColumns(headerRow){
-  const map = {...COL}; // fallback to default
-  headerRow.forEach((cell, idx) => {
-    const c = cell.trim().toLowerCase();
-    for(const [key, variants] of Object.entries(COL_NAMES)){
-      if(variants.some(v => c.includes(v.toLowerCase()))){
-        map[key] = idx;
-      }
-    }
-  });
-  return map;
-}
-
-let activeCOL = {...COL}; // aktiv column mapping
-
-async function syncSheet(sheetNameOverride){
+async function syncSheet(){
+  const btn = document.getElementById('tb-btn');
   const sts = document.getElementById('sync-status');
-  const sName = sheetNameOverride || SHEET_NAME;
+  if(sts) sts.innerHTML = '<span style="color:var(--accent2)">⟳ Sinxronlanmoqda…</span>';
 
-  var resolvedId = (CFG && CFG.sheetId) || SHEET_ID;
-  if(!resolvedId || !sName){
-    if(sts) sts.innerHTML = '<span style="color:var(--muted)">Sozlamalarda Sheet ID kiritilmagan</span>';
-    showToast('Sozlamalarda Sheet ID kiritilmagan', 'warn');
+  if(SHEET_CSV_URL === 'YOUR_CSV_EXPORT_URL_HERE'){
+    setTimeout(()=>{
+      if(sts) sts.innerHTML = '<span style="color:var(--muted)">Demo rejim · Google Sheets URL kiritilmagan</span>';
+      showToast('Demo rejim: Google Sheets URL kiritilmagan', 'warn');
+    }, 800);
     return;
   }
 
-  if(sts) sts.innerHTML = '<span style="color:var(--accent2)">⟳ '+sName+' yuklanmoqda…</span>';
-
-  const url = buildCsvUrl(sName);
   try {
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const res = await fetch(SHEET_CSV_URL);
     const csv = await res.text();
-    const allRows = parseCSV(csv);
-    if(!allRows.length) throw new Error("Jadval bosh");
-
-    // Find header row (first non-empty row with "F.I" or "Ism" etc)
-    let headerIdx = 0;
-    for(let i = 0; i < Math.min(5, allRows.length); i++){
-      const joined = allRows[i].join(' ').toLowerCase();
-      if(joined.includes('f.i') || joined.includes('ism') || joined.includes('lavozim')){
-        headerIdx = i; break;
-      }
-    }
-
-    // Auto-detect column positions from header
-    activeCOL = detectColumns(allRows[headerIdx]);
-    updateCOL(activeCOL);
-
-    // Data rows start after header
-    const dataRows = allRows.slice(headerIdx + 1).filter(r => {
-      const name = r[activeCOL.fsh] || '';
-      return name.trim().length > 2;
-    });
-
-    if(!dataRows.length) throw new Error("Malumot topilmadi");
-
-    ROWS = dataRows;
+    const lines = csv.split('\n').filter(l=>l.trim());
+    // Skip header rows (first 2 lines)
+    ROWS = lines.slice(2).map(line => {
+      const cols = line.split(',').map(c => c.replace(/^"|"$/g,'').trim());
+      return cols;
+    }).filter(r => r[COL.fsh]);
     FILTERED = [...ROWS];
     renderAll();
-
-    const syncTime = new Date().toLocaleTimeString('uz-UZ', {hour:'2-digit', minute:'2-digit'});
-    if(sts) sts.innerHTML =
-      '<span style="color:var(--green)">✓ '+sName+' · '+ROWS.length+' ta xodim · '+syncTime+'</span>';
-    showToast('✓ ' + ROWS.length + ' ta xodim yuklandi (' + sName + ')', 'ok');
-
-    // Update gs-link hrefs
-    ['gs-link','gs-link2'].forEach(id => {
-      const a = document.getElementById(id);
-      var su = getSheetUrl(); if(a && su) a.href = su;
-    });
-
+    if(sts) sts.innerHTML = `<span style="color:var(--green)">✓ Google Sheets · ${ROWS.length} ta xodim · ${new Date().toLocaleTimeString('uz')}</span>`;
+    showToast(`✓ ${ROWS.length} ta xodim yuklandi`,'ok');
   } catch(e) {
-    console.error('Sheets sync error:', e);
-    if(sts) sts.innerHTML =
-      '<span style="color:var(--accent)">⚠ Sheets ulanmadi: '+e.message+'</span>';
-    showToast('Sheets xato: ' + e.message, 'err');
+    if(sts) sts.innerHTML = '<span style="color:var(--accent)">⚠ Sheets ulanmadi — demo ma\'lumotlar ko\'rsatilmoqda</span>';
+    showToast('Sheets ulanmadi — demo rejim','err');
   }
 }
 
@@ -1547,99 +1373,198 @@ function renderAll(){
   if(curPg==='hr-disc') renderDisc();
 }
 
-// ══════════════════════════════════════════════════
-// SETTINGS — localStorage'dan yuklanadi
-// ══════════════════════════════════════════════════
-var CFG = {
-  clientId:  '',
-  emails:    [],   // ruxsat etilgan emaillar, bo'sh = hammaga
-  sheetId:   '',
-  sheetName: ''
-};
 
-function loadCFG(){
+// ════════════════════════════════════════════════════
+// CONFIG SHEET BASED AUTH
+// Quyidagi CONFIG_SHEET_ID ni bir marta to'ldiring.
+// Barcha sozlamalar (OAuth Client ID, emaillar, HR Sheet) shu varaqdan o'qiladi.
+// Config varaq formati (A:B ustunlar, key,value):
+//   client_id   , 1234-xxx.apps.googleusercontent.com
+//   allowed     , admin@gmail.com
+//   allowed     , user2@gmail.com
+//   sheet_id    , 1BxiMV...
+//   sheet_name  , HR
+// ════════════════════════════════════════════════════
+var CONFIG_SHEET_ID   = '';        // << SHU YERGA YOZING
+var CONFIG_SHEET_NAME = 'Config';  // Config varaq nomi
+
+var CFG = { clientId:'', emails:[], sheetId:'', sheetName:'' };
+var CFG_LOADED = false;
+
+// Config Sheet'ni yuklab, CFG ni to'ldiradi
+async function loadCFG(){
+  // Brauzerda saqlangan ID bormi? (foydalanuvchi sozlamalar orqali kiritism bo'lsa)
+  var storedId = localStorage.getItem('ub-cfg-id');
+  var activeId = CONFIG_SHEET_ID || storedId || '';
+  if(!activeId){ showNoConfig('Config Sheet ID kiritilmagan.'); return; }
+
+  // Config Sheet linkini yangilaymiz
+  setEl('cfg-sheet-link', function(a){ a.href='https://docs.google.com/spreadsheets/d/'+activeId+'/edit'; });
+
   try {
-    var saved = localStorage.getItem('ub-cfg');
-    if(saved){ var p = JSON.parse(saved); Object.assign(CFG, p); }
-  } catch(e){}
-}
-function saveCFG(){
-  localStorage.setItem('ub-cfg', JSON.stringify(CFG));
-}
+    var url = 'https://docs.google.com/spreadsheets/d/' + activeId +
+              '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent(CONFIG_SHEET_NAME);
+    var res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    var csv = await res.text();
 
-// ── SETTINGS PANEL ──
-function openSettings(){
-  loadCFG();
-  var el = function(id){ return document.getElementById(id); };
-  if(el('cfg-client-id'))  el('cfg-client-id').value  = CFG.clientId  || '';
-  if(el('cfg-sheet-id'))   el('cfg-sheet-id').value   = CFG.sheetId   || '';
-  if(el('cfg-sheet-name')) el('cfg-sheet-name').value = CFG.sheetName || '';
-  renderEmailList(CFG.emails || []);
-  document.getElementById('settings-overlay').classList.add('open');
-}
-function closeSettings(){
-  document.getElementById('settings-overlay').classList.remove('open');
-}
-function closeSettingsOnBg(e){
-  if(e.target === document.getElementById('settings-overlay')) closeSettings();
-}
-
-function renderEmailList(emails){
-  var list = document.getElementById('email-list');
-  if(!list) return;
-  list.innerHTML = '';
-  (emails.length ? emails : ['']).forEach(function(em, i){
-    var row = document.createElement('div');
-    row.className = 'settings-email-row';
-    row.innerHTML =
-      '<input class="settings-input" style="margin-bottom:0" type="email" '+
-      'placeholder="example@gmail.com" value="'+em+'"/>'+
-      '<button class="del-btn" onclick="removeEmailRow('+i+')">✕</button>';
-    list.appendChild(row);
-  });
-}
-function addEmailRow(){
-  var inputs = document.querySelectorAll('#email-list input');
-  var emails = Array.from(inputs).map(function(i){ return i.value.trim(); }).filter(Boolean);
-  emails.push('');
-  renderEmailList(emails);
-  var rows = document.querySelectorAll('#email-list input');
-  if(rows.length) rows[rows.length-1].focus();
-}
-function removeEmailRow(idx){
-  var inputs = document.querySelectorAll('#email-list input');
-  var emails = Array.from(inputs).map(function(i){ return i.value.trim(); }).filter(Boolean);
-  emails.splice(idx, 1);
-  renderEmailList(emails);
-}
-
-function saveSettings(){
-  var el = function(id){ return document.getElementById(id); };
-  var inputs = document.querySelectorAll('#email-list input');
-  var emails = Array.from(inputs).map(function(i){ return i.value.trim().toLowerCase(); }).filter(Boolean);
-
-  CFG.clientId  = (el('cfg-client-id')  ? el('cfg-client-id').value.trim()  : '') || '';
-  CFG.emails    = emails;
-  CFG.sheetId   = (el('cfg-sheet-id')   ? el('cfg-sheet-id').value.trim()   : '') || '';
-  CFG.sheetName = (el('cfg-sheet-name') ? el('cfg-sheet-name').value.trim() : '') || '';
-
-  saveCFG();
-  closeSettings();
-  showToast('Sozlamalar saqlandi', 'ok');
-
-  // Re-init Google Sign-In with new client ID
-  if(CFG.clientId){
-    var wrap = document.getElementById('g-signin-wrap');
-    if(wrap) wrap.innerHTML = '';
-    document.getElementById('login-no-config').style.display = 'none';
-    initGoogleSignIn();
-  } else {
-    document.getElementById('login-no-config').style.display = 'block';
-    var wrap = document.getElementById('g-signin-wrap');
-    if(wrap) wrap.innerHTML = '';
+    CFG.emails = [];
+    csv.split(/\r?\n/).forEach(function(line){
+      var c = parseCsvLine(line);
+      if(c.length < 2) return;
+      var k = c[0].trim().toLowerCase().replace(/"/g,'');
+      var v = c[1].trim().replace(/"/g,'');
+      if(!k || !v) return;
+      if(k==='client_id')       CFG.clientId  = v;
+      else if(k==='sheet_id')   CFG.sheetId   = v;
+      else if(k==='sheet_name') CFG.sheetName = v;
+      else if(k==='allowed')    CFG.emails.push(v.toLowerCase());
+    });
+    CFG_LOADED = true;
+    showCfgPreview(activeId);
+    afterCFGLoaded();
+  } catch(ex) {
+    console.warn('Config yuklanmadi:', ex.message);
+    showNoConfig('Config yuklanmadi: ' + ex.message);
   }
 }
 
+function parseCsvLine(line){
+  var cells=[],cur='',inQ=false;
+  for(var i=0;i<line.length;i++){
+    var ch=line[i];
+    if(ch==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(ch===','&&!inQ){cells.push(cur);cur='';}
+    else cur+=ch;
+  }
+  cells.push(cur);
+  return cells;
+}
+
+function showCfgPreview(sheetId){
+  var el = document.getElementById('cfg-preview');
+  var tbl = document.getElementById('cfg-preview-table');
+  if(!el || !tbl) return;
+  el.style.display = 'block';
+  var rows = [
+    ['client_id',   CFG.clientId  ? CFG.clientId.slice(0,30)+'...' : '<span style="color:var(--accent)">Kiritilmagan</span>'],
+    ['sheet_id',    CFG.sheetId   ? CFG.sheetId.slice(0,30)+'...'  : '—'],
+    ['sheet_name',  CFG.sheetName || '—'],
+    ['allowed',     CFG.emails.length ? CFG.emails.join(', ') : '<span style="color:var(--muted)">Hammaga ruxsat</span>'],
+  ];
+  tbl.innerHTML = rows.map(function(r){
+    return '<div style="display:flex;gap:12px;border-bottom:1px solid var(--border);padding:3px 0;">'
+      +'<span style="color:var(--muted);width:90px;flex-shrink:0;">'+r[0]+'</span>'
+      +'<span>'+r[1]+'</span></div>';
+  }).join('');
+}
+
+function afterCFGLoaded(){
+  setEl('login-no-config', function(el){ el.style.display='none'; });
+  if(!CFG.clientId){
+    showNoConfig('Config varaqda <b>client_id</b> topilmadi.');
+    return;
+  }
+  initGoogleSignIn();
+}
+
+function showNoConfig(msg){
+  var el = document.getElementById('login-no-config');
+  if(!el) return;
+  el.style.display = 'block';
+  el.innerHTML = '⚠ ' + msg;
+}
+
+function setEl(id, fn){ var el=document.getElementById(id); if(el) fn(el); }
+
+// ── Settings panel ──
+function openSettings(){
+  var overlay = document.getElementById('settings-overlay');
+  if(overlay){ overlay.classList.add('open'); }
+  // Brauzerda saqlangan yoki HTML'dagi ID ni ko'rsat
+  var storedId = localStorage.getItem('ub-cfg-id') || CONFIG_SHEET_ID || '';
+  setEl('inp-cfg-id', function(el){ el.value = storedId; });
+  // Agar ID allaqachon bor bo'lsa — preview ko'rsat
+  if(CFG_LOADED) showCfgPreview(storedId);
+}
+function closeSettings(){
+  var overlay = document.getElementById('settings-overlay');
+  if(overlay){ overlay.classList.remove('open'); }
+}
+function settingsBgClick(e){
+  if(e.target === document.getElementById('settings-overlay')) closeSettings();
+}
+
+function applyCfgId(){
+  var inp = document.getElementById('inp-cfg-id');
+  var raw = inp ? inp.value.trim() : '';
+  // URL kiritsalar ichidan ID ni ajratib olamiz
+  var m = raw.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  var id = m ? m[1] : raw;
+  if(!id){ showToast('Sheet ID kiriting', 'err'); return; }
+
+  CONFIG_SHEET_ID = id;
+  localStorage.setItem('ub-cfg-id', id);  // faqat ID saqlanadi, sozlamalar emas
+  closeSettings();
+  showToast('Config Sheet ID saqlandi, yuklanmoqda...', 'ok');
+  // Reset CFG
+  CFG = { clientId:'', emails:[], sheetId:'', sheetName:'' };
+  CFG_LOADED = false;
+  // Hide Google button and re-init
+  setEl('g-signin-wrap', function(el){ el.innerHTML=''; });
+  loadCFG();
+}
+
+// ── Google Sign-In ──
+function initGoogleSignIn(){
+  if(typeof google === 'undefined'){
+    setEl('login-status', function(el){ el.textContent='Google yuklanmoqda...'; });
+    setTimeout(initGoogleSignIn, 800);
+    return;
+  }
+  setEl('login-status', function(el){ el.textContent=''; });
+  google.accounts.id.initialize({
+    client_id: CFG.clientId,
+    callback: handleCredential,
+    auto_select: false,
+    cancel_on_tap_outside: true
+  });
+  setEl('g-signin-wrap', function(wrap){
+    wrap.innerHTML = '';
+    google.accounts.id.renderButton(wrap, {
+      theme:'filled_black', size:'large', text:'signin_with', shape:'rectangular', width:320
+    });
+  });
+  google.accounts.id.prompt();
+}
+
+function handleCredential(response){
+  try {
+    var parts   = response.credential.split('.');
+    var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+    var email   = (payload.email || '').toLowerCase();
+
+    if(CFG.emails.length > 0 && !CFG.emails.includes(email)){
+      loginErr('"' + email + '" — kirish ruxsati berilmagan.');
+      if(typeof google !== 'undefined') google.accounts.id.disableAutoSelect();
+      return;
+    }
+    currentUser = { name: payload.name||email, email: email, picture: payload.picture||null, sub: payload.sub||'' };
+    enterApp();
+  } catch(ex){
+    loginErr('Token xatolik: ' + ex.message);
+  }
+}
+
+function loginErr(msg){
+  setEl('login-status', function(el){
+    el.innerHTML = '<span style="color:var(--accent)">❌ '+msg+'</span>';
+    setTimeout(function(){ el.textContent=''; }, 6000);
+  });
+  showToast(msg, 'err');
+}
+
+let currentUser = null;
 
 // ── THEME ──
 function initTheme(){
@@ -1681,77 +1606,46 @@ document.addEventListener('click', e => {
 
 // ── LOGIN ──
 function initGoogleSignIn(){
-  loadCFG();
-  var cid = CFG.clientId;
-  var noConfig = document.getElementById('login-no-config');
-  var wrap = document.getElementById('g-signin-wrap');
-  var sts = document.getElementById('login-status');
-
-  if(!cid){
-    if(noConfig) noConfig.style.display = 'block';
-    if(wrap) wrap.innerHTML = '';
-    return;
-  }
-  if(noConfig) noConfig.style.display = 'none';
-
-  if(typeof google === 'undefined'){
-    if(sts) sts.textContent = 'Google servisi yuklanmoqda...';
-    return;
-  }
-
-  if(sts) sts.textContent = '';
+  if(typeof google === 'undefined' || GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE')) return;
   google.accounts.id.initialize({
-    client_id: cid,
+    client_id: GOOGLE_CLIENT_ID,
     callback: handleCredential,
     auto_select: false,
-    cancel_on_tap_outside: true
+    cancel_on_tap_outside: false,
   });
-  if(wrap){
-    wrap.innerHTML = '';
-    google.accounts.id.renderButton(wrap, {
-      theme: 'filled_black', size: 'large',
-      text: 'signin_with', shape: 'rectangular', width: 320
-    });
-  }
+  google.accounts.id.renderButton(
+    document.getElementById('g-signin-wrap'),
+    { theme:'filled_black', size:'large', text:'signin_with', shape:'rectangular', width:320 }
+  );
+  // Try auto login
   google.accounts.id.prompt();
 }
 
 function handleCredential(response){
   try {
-    // Decode JWT payload (base64url)
-    var parts = response.credential.split('.');
-    var payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
-    var email  = (payload.email || '').toLowerCase();
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const email   = payload.email || '';
+    const domain  = email.split('@')[1] || '';
 
-    // Check allowlist
-    var allowed = CFG.emails || [];
-    if(allowed.length > 0 && !allowed.includes(email)){
-      loginError(email + " — tizimga kirish ruxsati yo'q.");
-      // Sign out immediately so they don't stay logged in
-      if(typeof google !== 'undefined') google.accounts.id.disableAutoSelect();
+    // Domain / email check
+    if(ALLOWED_DOMAINS.length && !ALLOWED_DOMAINS.includes(domain)){
+      loginError(`"${email}" manziliga ruxsat yo'q.\nRuxsat berilgan domenlar: ${ALLOWED_DOMAINS.join(', ')}`);
+      return;
+    }
+    if(ALLOWED_EMAILS.length && !ALLOWED_EMAILS.includes(email)){
+      loginError(`"${email}" manziliga ruxsat yo'q.`);
       return;
     }
 
-    currentUser = {
-      name:    payload.name    || email,
-      email:   email,
-      picture: payload.picture || null,
-      sub:     payload.sub     || ''
-    };
+    currentUser = { name: payload.name, email, picture: payload.picture, sub: payload.sub };
     enterApp();
-
-  } catch(err){
-    loginError('Token xatolik: ' + err.message);
+  } catch(e) {
+    loginError('Token xatolik: ' + e.message);
   }
 }
 
 function loginError(msg){
-  var sts = document.getElementById('login-status');
-  if(sts){
-    sts.innerHTML = '<span style="color:var(--accent)">❌ ' + msg + '</span>';
-    setTimeout(function(){ sts.textContent = ''; }, 5000);
-  }
-  showToast(msg, 'err');
+  showToast('❌ '+msg, 'err');
 }
 
 
@@ -1799,14 +1693,12 @@ function enterApp(){
   swMod('hr');
   renderAll();
 
-  // 6. Auto-sync if sheet configured in settings
-  var sid  = CFG.sheetId   || SHEET_ID;
-  var snam = CFG.sheetName || SHEET_NAME;
-  if(sid && snam){
-    setTimeout(function(){ syncSheet(snam); }, 400);
-  }
+  // 6. Auto-sync HR sheet if configured
+  var sid  = (CFG && CFG.sheetId)   || SHEET_ID;
+  var snam = (CFG && CFG.sheetName) || SHEET_NAME;
+  if(sid && snam) setTimeout(function(){ syncSheet(snam); }, 400);
 
-  // 6. Toast
+  // 7. Toast
   showToast('Xush kelibsiz, ' + u.name.split(' ')[0] + '!', 'ok');
 }
 
@@ -1815,17 +1707,18 @@ function doSignOut(){
   currentUser = null;
   const ls = document.getElementById('login-screen');
   if(ls){ ls.style.display='flex'; ls.classList.remove('hiding'); }
-  if(typeof google !== 'undefined' && !GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE')){
+  if(typeof google !== 'undefined' && CFG.clientId){
     google.accounts.id.disableAutoSelect();
   }
   showToast('👋 Tizimdan chiqildi', 'ok');
 }
 
 // ══════════ INIT ══════════
-loadCFG();
 initTheme();
-if(typeof google !== 'undefined'){ initGoogleSignIn(); }
-else { window.addEventListener('load', function(){ initGoogleSignIn(); }); }
+// Settings tugmasini ulash
+var _sb = document.getElementById('open-settings-btn');
+if(_sb) _sb.addEventListener('click', function(){ openSettings(); });
+loadCFG();
 </script>
 </body>
 </html>
